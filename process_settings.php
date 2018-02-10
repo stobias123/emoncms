@@ -14,18 +14,30 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 require_once('Lib/enum.php');
 
-// Check if settings.php file exists
-if(file_exists(dirname(__FILE__)."/settings.php"))
+// Locate settings.php file location
+// RaspberryPi
+        if(file_exists("/etc/emoncms/settings.php"))
+        {
+        $settingsPath = "/etc/emoncms";
+        }
+// Fallback & compatibility
+        elseif(file_exists(dirname(__FILE__)."/settings.php"))
+        {
+        $settingsPath = (dirname(__FILE__));
+        }
+
+// Check if the settings path exists
+if(file_exists($settingsPath))
 {
     // Load settings.php
-    require_once('settings.php');
+    require_once($settingsPath ."/settings.php");
 
     if (!isset($allow_config_env_vars)) $allow_config_env_vars = false;
     if ($allow_config_env_vars) {
         /*
             Load settings from environment variables
 
-            Environment settings override settings.php and defaults, 
+            Environment settings override settings.php and defaults,
             and allow you to run multiple variants of the same
             installation (e.g. for testing).
         */
@@ -58,7 +70,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
         if (isset($_ENV["EMONCMS_MQTT_PASSWORD"]))     $redis_server['password'] = $_ENV["EMONCMS_MQTT_PASSWORD"];
         if (isset($_ENV["EMONCMS_MQTT_BASETOPIC"]))     $redis_server['basetopic'] = $_ENV["EMONCMS_MQTT_BASETOPIC"];
     }
-    
+
     //  Validate settings are complete
 
     $error_out = "";
