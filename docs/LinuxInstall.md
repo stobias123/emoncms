@@ -10,11 +10,11 @@ You may need to start by updating the system repositories
 
 **For Ubuntu 14.04:**
 
-    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp -y
+    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential -y
 
 **For Ubuntu 16.04:**
 
-    sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential ufw ntp -y
+    sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential -y
 
 ### Install PHP pecl dependencies
 
@@ -38,18 +38,19 @@ You may need to start by updating the system repositories
 Emoncms uses a front controller to route requests, modrewrite needs to be configured:
 
 ```
- sudo a2enmod rewrite
- sudo sh -c "echo '<Directory /var/www/html/emoncms>' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo '  Options FollowSymLinks' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo '  AllowOverride All' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo '  DirectoryIndex index.php' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo '  Order allow,deny' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo '  Allow from all' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo '</Directory>' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo 'ServerName localhost' >> /etc/apache2/apache2.conf"
- sudo ln -s /etc/apache2/sites-available/emoncms.conf /etc/apache2/sites-enabled/
- sudo a2ensite emoncms
- sudo service apache2 reload
+sudo a2enmod rewrite
+sudo cat <<EOF >> /etc/apache2/sites-available/emoncms.conf
+<Directory /var/www/html/emoncms>
+    Options FollowSymLinks
+    AllowOverride All
+    DirectoryIndex index.php
+    Order allow,deny
+    Allow from all
+</Directory>
+EOF
+sudo echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+sudo a2ensite emoncms
+sudo service apache2 reload
 ```
 
 ## Install Emoncms
@@ -78,7 +79,7 @@ Once installed you can pull in updates with:
 
     cd /var/www/html/emoncms
     git pull
-
+    
 ## Create a MYSQL database
 
     mysql -u root -p
@@ -136,6 +137,8 @@ Save (Ctrl-X), type Y and exit
 ### Install add-on emoncms modules (optional)
 
     cd /var/www/html/emoncms/Modules
+    git clone https://github.com/emoncms/graph.git
+    git clone https://github.com/emoncms/device.git
     git clone https://github.com/emoncms/dashboard.git
     git clone https://github.com/emoncms/app.git
 

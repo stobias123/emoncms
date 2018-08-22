@@ -63,12 +63,15 @@ then reboot.
 
 #### Move PHP sessions to tmpfs (RAM)
 
-Edit the php config file to direct php5 sessions to tmpfs (RAM):
+Edit the php config file to direct php sessions to tmpfs (RAM):  
+*(**Raspbian Stretch** requires php7*)
 
-`sudo nano /etc/php5/apache2/php.ini`
+`sudo nano /etc/php/7.0/apache2/php.ini` **PHP7**  
+`sudo nano /etc/php5/apache2/php.ini` **PHP5**
 
+Find the line - `; session.save_path = "/var/lib/php/sessions"` and replace it with - `session.save_path = "/tmp"` **(Raspbian Stretch)** OR  
 Find the line - `; session.save_path = "/var/lib/php5/sessions"` and replace it with - `session.save_path = "/tmp"` **(Raspbian Jessie)** OR  
-Find the line - `; session.save_path = "/var/lib/php5"` and replace it with - `session.save_path = "/tmp"` **(Raspbian Wheezy)**
+Find the line - `; session.save_path = "/var/lib/php5"` and replace it with - `session.save_path = "/tmp"` **(Raspbian Wheezy)**  
 
 Save & exit.
 
@@ -85,11 +88,11 @@ Comment out all redis saves:
 
 Save & exit:
 
-    sudo service redis-server reboot
+    sudo service redis-server restart
 
 Ensure all redis databases have been removed from `/var/lib/redis` with: 
     
-   rm -rf /var/lib/redis/*
+    sudo su -c 'rm -rf /var/lib/redis/*'
 
 #### Configure Feedwriter
 
